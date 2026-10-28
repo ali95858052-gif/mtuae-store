@@ -9,16 +9,31 @@ const save = () => localStorage.setItem('cart', JSON.stringify(cart));
 async function init() {
   products = await (await fetch('products.json')).json();
   $('grid').innerHTML = products.map(p => `
-    <div class="card">
+    <div class="card" onclick="openProduct('${p.id}')">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
       <p>${p.desc}</p>
       <div class="price">${p.price} <small>درهم</small></div>
-      <button onclick="add('${p.id}')">أضف للسلة 🛒</button>
+      <button onclick="event.stopPropagation();add('${p.id}')">أضف للسلة 🛒</button>
     </div>`).join('');
   render();
 }
+
+function openProduct(id) {
+  const p = products.find(x => x.id === id); if (!p) return;
+  $('pmBody').innerHTML = `
+    <div class="em">${p.emoji}</div>
+    ${p.tag ? `<span class="ptag">${p.tag}</span>` : ''}
+    <h2>${p.name}</h2>
+    <p class="pd">${p.desc}</p>
+    <ul>${(p.includes || []).map(i => `<li>✅ ${i}</li>`).join('')}</ul>
+    <div class="price">${p.price} <small>درهم</small></div>
+    <button class="pbtn" onclick="add('${p.id}');closeProduct()">أضف للسلة 🛒</button>`;
+  $('pm').classList.add('on');
+}
+function closeProduct() { $('pm').classList.remove('on'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProduct(); });
 
 function add(id) { cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }
 function change(id, d) { cart[id] = (cart[id] || 0) + d; if (cart[id] <= 0) delete cart[id]; save(); render(); }
