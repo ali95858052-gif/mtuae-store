@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المتجر | MT UAE FANS</title>
+<meta name="description" content="منتجات رقمية جاهزة: قوالب، أدلة، وخطط محتوى بهوية احترافية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <img class="logo" src="assets/logo.png" alt="MT UAE FANS">
+  <span class="badge">🛍 متجر المنتجات الرقمية</span>
+  <h1>منتجات رقمية جاهزة<br><em>تنقلك لمستوى احترافي</em></h1>
+  <p>قوالب وأدلة وخطط جاهزة. اشتري، حمّل، وابدأ فورًا.</p>
+  <a class="btn" href="#products">تصفّح المنتجات</a>
+</header>
+
+<main>
+  <section id="products">
+    <h2>منتجاتنا</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+  <section class="trust">
+    <div>⚡<b>تسليم سريع</b></div>
+    <div>🔒<b>دفع آمن</b></div>
+    <div>💬<b>دعم واتساب</b></div>
+  </section>
+</main>
+
+<footer>
+  <div>💬 WhatsApp: <a href="https://wa.me/971563720054">0563720054</a></div>
+  <div>📷 <a href="https://instagram.com/mtuae_fans">instagram.com/mtuae_fans</a></div>
+  <small>© MT UAE FANS | دبي فانز</small>
+</footer>
+
+<button class="cartbtn" id="openCart">🛒 <span id="count">0</span></button>
+<aside class="drawer" id="drawer">
+  <div class="dhead"><b>سلة المشتريات</b><button id="closeCart">✕</button></div>
+  <div id="items"></div>
+  <div class="dfoot">
+    <div class="total">الإجمالي: <b id="total">0</b> درهم</div>
+    <button class="btn full" id="checkout">إتمام الدفع</button>
+    <a class="wa" id="waOrder" target="_blank">أو اطلب عبر واتساب</a>
+    <div class="msg" id="msg"></div>
+  </div>
+</aside>
+<div class="overlay" id="overlay"></div>
+<script src="app.js"></script>
+</body>
+</html>
