@@ -16,7 +16,8 @@ async function init() {
       <p style="opacity:.75;margin:6px 0 0">${sub}</p></div>`;
   const ads = products.filter(p => p.type === 'service' && p.cat === 'ads');
   const social = products.filter(p => p.type === 'service' && p.cat === 'social');
-  const services = products.filter(p => p.type === 'service' && p.cat !== 'ads' && p.cat !== 'social');
+  const media = products.filter(p => p.type === 'service' && p.cat === 'media');
+  const services = products.filter(p => p.type === 'service' && !['ads', 'social', 'media'].includes(p.cat));
   const digital = products.filter(p => p.type !== 'service');
   const card = p => `
     <div class="card">
@@ -35,6 +36,7 @@ async function init() {
   $('grid').innerHTML =
     (ads.length ? head('📣 التسويق الممول', 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان · اطلبها عبر واتساب') + ads.map(card).join('') : '') +
     (social.length ? head('📱 إدارة السوشيال ميديا', 'نشتغل على حساباتك بالكامل كل شهر · ميزانية الإعلانات منفصلة · اطلبها عبر واتساب') + social.map(card).join('') : '') +
+    (media.length ? head('🎬 الفيديو والتصميم', 'فيديوهات إعلانية وتصاميم بهوية علامتك · اطلبها عبر واتساب') + media.map(card).join('') : '') +
     (services.length ? head('🌐 تصميم المواقع', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
     (digital.length ? head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('') : '');
   // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
