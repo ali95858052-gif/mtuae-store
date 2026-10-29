@@ -29,12 +29,19 @@ fbq('track', 'PageView');
   <span class="badge">MT UAE FANS · دبي</span>
   <h1>كل اللي نشاطك يحتاجه<br><em>عشان يكبر أونلاين</em></h1>
   <p>إعلانات ممولة، إدارة سوشيال ميديا، فيديوهات إعلانية، ومواقع احترافية. فريق واحد، ونتائج تشوفها بالأرقام.</p>
-  <a class="btn" href="#products">تصفّح الخدمات</a>
+  <div class="hero-ctas">
+    <a class="btn" href="#products">تصفّح الخدمات</a>
+    <button class="btn ghost" onclick="openQuiz()">اعرف باقتك المناسبة ✨</button>
+  </div>
 </header>
 <nav class="secnav" id="secnav"></nav>
 
 <main>
   <section id="products">
+    <div class="quizbar">
+      <div><b>محتار تختار أنهي باقة؟</b><span>جاوب على 3 أسئلة سريعة، ونقولك الباقة اللي تناسب نشاطك بالظبط</span></div>
+      <button class="btn" onclick="openQuiz()">اعرف باقتك في 30 ثانية</button>
+    </div>
     <div id="grid"></div>
   </section>
   <section class="trust">
@@ -63,6 +70,13 @@ fbq('track', 'PageView');
   </div>
 </aside>
 <div class="overlay" id="overlay"></div>
+<div class="modal" id="quiz" onclick="if(event.target===this)closeQuiz()">
+  <div class="mbox qbox" role="dialog" aria-modal="true" aria-labelledby="qtitle">
+    <button class="mx" id="qclose" onclick="closeQuiz()" aria-label="إغلاق">✕</button>
+    <div class="qprog"><i id="qbar"></i></div>
+    <div id="qbody"></div>
+  </div>
+</div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeDetails()">
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mtitle">
     <button class="mx" id="mclose" onclick="closeDetails()" aria-label="إغلاق">✕</button>

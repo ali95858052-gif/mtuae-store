@@ -177,3 +177,33 @@ footer a{color:var(--gold2);text-decoration:none;font-weight:700}
 .wa{display:block;text-align:center;margin-top:10px;color:var(--gold2);cursor:pointer}
 .msg{margin-top:8px;color:#ff8a8a;font-size:14px;text-align:center}
 .empty{text-align:center;color:#999;padding:40px 0}
+
+/* ===== اعرف باقتك المناسبة ===== */
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:22px}
+.hero-ctas .btn{margin-top:0}
+.btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold2);box-shadow:none}
+.btn.ghost:hover{background:rgba(212,175,55,.1);box-shadow:0 0 24px rgba(212,175,55,.25)}
+.quizbar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:34px 0 6px;padding:20px 24px;border-radius:20px;
+  border:1px solid var(--gline);background:linear-gradient(120deg,rgba(212,175,55,.1),rgba(227,6,19,.1));text-align:right}
+.quizbar b{display:block;font-size:20px}.quizbar span{color:var(--muted)}
+.quizbar .btn{margin-top:0;font-size:17px;padding:11px 26px}
+@media(max-width:600px){.quizbar{flex-direction:column;text-align:center}.quizbar .btn{width:100%}}
+.qbox{padding-top:44px}
+.qprog{position:absolute;top:0;right:0;left:0;height:4px;background:var(--line);border-radius:24px 24px 0 0;overflow:hidden}
+.qprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .35s;margin-right:0;margin-left:auto}
+.qn{display:inline-block;color:var(--gold2);font-weight:800;font-size:13px;border:1px solid var(--gline);border-radius:20px;padding:2px 12px;margin-bottom:10px}
+.qbox h2{font-size:24px;margin:0 0 18px}
+.qopts{display:grid;gap:10px}
+.qopts.two{grid-template-columns:1fr 1fr}
+.qopt{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;text-align:center;font:inherit;color:#fff;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s,box-shadow .2s}
+.qopt:hover,.qopt:focus-visible{transform:translateY(-2px);border-color:var(--gold);background:linear-gradient(180deg,#201c12,var(--surface));box-shadow:0 0 18px rgba(212,175,55,.2);outline:0}
+.qopt .ico{width:26px;height:26px;color:var(--gold2);margin-bottom:4px}
+.qopt b{font-size:17px}.qopt span{color:var(--muted);font-size:14px}
+.qback{background:none;border:0;color:var(--muted);font:700 14px Tajawal;cursor:pointer;margin-top:14px;padding:6px 10px}
+.qback:hover{color:var(--gold2)}
+.qrow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+a.cta{display:block;text-decoration:none;text-align:center}
+.qbox .feat{list-style:none;padding:0;text-align:right;font-size:15px;margin-top:6px}
+.qbox .feat li{position:relative;padding:6px 26px 6px 0;border-bottom:1px solid var(--line)}
+.qbox .feat li::before{content:'✓';position:absolute;right:2px;top:6px;color:var(--gold);font-weight:900}
