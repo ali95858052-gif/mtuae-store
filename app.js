@@ -8,7 +8,13 @@ const save = () => localStorage.setItem('cart', JSON.stringify(cart));
 
 async function init() {
   products = await (await fetch('products.json')).json();
-  $('grid').innerHTML = products.map(p => `
+  // نقسّم المتجر: خدمات التصميم فوق، والمنتجات الرقمية تحت، وكل قسم بعنوان
+  const head = (t, sub) => `<div class="sec-head" style="grid-column:1/-1;text-align:center;margin:18px 0 4px">
+      <h3 style="font-size:1.45rem;font-weight:900;margin:0">${t}</h3>
+      <p style="opacity:.75;margin:6px 0 0">${sub}</p></div>`;
+  const services = products.filter(p => p.type === 'service');
+  const digital = products.filter(p => p.type !== 'service');
+  const card = p => `
     <div class="card">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
@@ -18,7 +24,10 @@ async function init() {
       ${p.type === 'service'
         ? `<button onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
         : `<button onclick="add('${p.id}')">أضف للسلة 🛒</button>`}
-    </div>`).join('');
+    </div>`;
+  $('grid').innerHTML =
+    (services.length ? head('🌐 خدمات التصميم', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
+    head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('');
   // الخدمات (تصميم المواقع) ما تدخلش السلة ولا الدفع الأونلاين
   Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service') delete cart[id]; });
   save();
