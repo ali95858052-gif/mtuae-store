@@ -8,35 +8,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<style>
-/* تنسيق الشعار والعنوان: الشعار في النص فوق، والشارة تحته في سطر لوحدها */
-.hero{display:flex;flex-direction:column;align-items:center;text-align:center}
-.hero .logo{display:block;margin:0 auto 18px;float:none}
-.hero .badge{display:inline-block;margin:0 auto 14px}
-.hero h1{margin-top:0}
-/* قائمة مميزات الباقات */
-.card .feat{list-style:none;padding:0;margin:10px 0 6px;text-align:right;color:#ddd;font-size:15px;line-height:1.9}
-.card .feat li{border-bottom:1px dashed rgba(212,175,55,.18)}
-</style>
 </head>
 <body>
 <header class="hero">
   <img class="logo" src="assets/logo.png" alt="MT UAE FANS">
   <span class="badge">✨ متجر MT UAE FANS</span>
-  <h1>تسويق ممول ومواقع احترافية<br><em>تنقلك لمستوى احترافي</em></h1>
-  <p>إعلانات على إنستغرام وفيسبوك تجيبلك عملاء، وموقع احترافي لنشاطك خلال 72 ساعة.</p>
+  <h1>خدمات تسويق متكاملة<br><em>تنقلك لمستوى احترافي</em></h1>
+  <p>إعلانات ممولة، وإدارة سوشيال ميديا، وفيديوهات إعلانية، ومواقع احترافية. كل اللي نشاطك محتاجه في مكان واحد.</p>
   <a class="btn" href="#products">تصفّح الخدمات</a>
 </header>
+<nav class="secnav" id="secnav"></nav>
 
 <main>
   <section id="products">
     <h2>خدماتنا</h2>
-    <div class="grid" id="grid"></div>
+    <div id="grid"></div>
   </section>
   <section class="trust">
-    <div>⚡<b>تسليم سريع</b></div>
-    <div>🔒<b>دفع آمن</b></div>
-    <div>💬<b>دعم واتساب</b></div>
+    <div><span>⚡</span><b>تنفيذ سريع</b><small>نبدأ شغلك خلال 24 ساعة</small></div>
+    <div><span>🎯</span><b>نتائج حقيقية</b><small>نتابع الأرقام ونطوّر باستمرار</small></div>
+    <div><span>💬</span><b>دعم مباشر</b><small>تواصل معنا على واتساب في أي وقت</small></div>
   </section>
 </main>
 
@@ -46,6 +37,7 @@
   <small>© MT UAE FANS | دبي فانز</small>
 </footer>
 
+<a class="wafab" href="https://wa.me/971563720054" target="_blank" aria-label="واتساب">💬 <span>تواصل معنا</span></a>
 <button class="cartbtn" id="openCart">🛒 <span id="count">0</span></button>
 <aside class="drawer" id="drawer">
   <div class="dhead"><b>سلة المشتريات</b><button id="closeCart">✕</button></div>

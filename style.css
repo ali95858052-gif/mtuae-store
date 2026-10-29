@@ -1,55 +1,113 @@
-:root{--red:#d1001f;--gold:#d4af37;--gold2:#f3d97a;--bg:#0a0a0a;--card:#141414}
+/* ===== MT UAE FANS · ألوان الهوية: أسود + أحمر الشعار + أبيض، ولمسات ذهبي ===== */
+:root{
+  --red:#E30613; --red2:#9e0010; --gold:#d4af37; --gold2:#f3d97a;
+  --bg:#070708; --surface:#111114; --surface2:#17171b;
+  --line:rgba(255,255,255,.08); --gline:rgba(212,175,55,.35);
+  --text:#fff; --muted:#a9a9b2;
+}
 *{box-sizing:border-box;margin:0}
-body{font-family:'Tajawal',sans-serif;background:radial-gradient(700px 400px at 90% 0,rgba(209,0,31,.35),transparent 70%),var(--bg);color:#fff;line-height:1.6}
-.hero{text-align:center;padding:48px 20px 36px}
-.logo{width:130px;height:130px;border-radius:50%;filter:drop-shadow(0 0 22px rgba(212,175,55,.4))}
-.badge{display:inline-block;margin-top:14px;background:var(--red);border:2px solid var(--gold2);border-radius:30px;padding:4px 20px;font-weight:700}
-h1{font-size:clamp(30px,6vw,52px);font-weight:900;margin:14px 0 8px;line-height:1.25}
-h1 em{font-style:normal;color:var(--gold2)}
-.hero p{color:#ccc;font-size:18px}
-.btn{display:inline-block;margin-top:20px;background:linear-gradient(90deg,#b30019,#d4122a);color:#fff;border:3px solid var(--gold);border-radius:40px;padding:10px 34px;font:800 20px Tajawal;text-decoration:none;cursor:pointer}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:'Tajawal',sans-serif;color:var(--text);line-height:1.6;background:
+  radial-gradient(800px 420px at 95% -5%,rgba(227,6,19,.28),transparent 70%),
+  radial-gradient(600px 380px at -10% 35%,rgba(212,175,55,.07),transparent 70%),var(--bg)}
+
+/* ===== الجزء اللي فوق ===== */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:52px 20px 34px}
+.logo{width:124px;height:124px;border-radius:50%;margin-bottom:18px;filter:drop-shadow(0 0 26px rgba(227,6,19,.35))}
+.badge{display:inline-block;margin-bottom:14px;background:rgba(227,6,19,.12);border:1px solid rgba(227,6,19,.55);color:#ffd5d8;border-radius:30px;padding:5px 18px;font-weight:700;font-size:15px}
+h1{font-size:clamp(30px,6vw,54px);font-weight:900;margin:0 0 10px;line-height:1.25}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:18px;max-width:620px}
+.btn{display:inline-block;margin-top:22px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:0;border-radius:40px;padding:13px 38px;font:800 19px Tajawal;text-decoration:none;cursor:pointer;box-shadow:0 10px 30px rgba(227,6,19,.35);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(227,6,19,.5)}
 .btn.full{width:100%;margin-top:12px}
-main{max-width:1100px;margin:auto;padding:0 18px}
-h2{text-align:center;font-size:34px;color:var(--gold2);margin:20px 0 22px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
-.card{position:relative;background:linear-gradient(165deg,#1b1b1b,#050505);border:4px solid var(--gold);border-radius:22px;padding:22px;text-align:center;box-shadow:0 10px 26px #000,0 0 24px rgba(212,175,55,.18)}
-.card .em{font-size:60px}
-.card h3{font-size:22px;margin:8px 0 4px}
-.card p{color:#bbb;font-size:16px;min-height:48px}
-.price{font-size:40px;font-weight:900;color:var(--gold2);margin:8px 0}
-.price small{font-size:18px}
-.tag{position:absolute;top:-14px;right:50%;transform:translateX(50%);background:var(--red);border:2px solid var(--gold2);border-radius:18px;padding:0 16px;font-weight:800;font-size:14px;white-space:nowrap}
-.card button{width:100%;background:linear-gradient(90deg,#b30019,#d4122a);color:#fff;border:2px solid var(--gold2);border-radius:30px;padding:9px;font:800 18px Tajawal;cursor:pointer}
-.trust{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:40px 0}
-.trust div{flex:1;min-width:180px;text-align:center;border:3px solid var(--gold);border-radius:18px;padding:14px;background:#0d0d0d;font-size:26px}
-.trust b{display:block;font-size:17px}
-footer{text-align:center;padding:30px 18px 90px;border-top:2px solid #d4af3744;color:#ccc}
+
+/* ===== القائمة السريعة للأقسام ===== */
+.secnav{position:sticky;top:0;z-index:6;display:flex;gap:8px;overflow-x:auto;padding:12px 16px;justify-content:safe center;
+  background:rgba(7,7,8,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;color:#ddd;text-decoration:none;font-weight:700;font-size:15px;padding:7px 16px;border-radius:30px;border:1px solid var(--line);background:var(--surface);transition:.2s}
+.secnav a:hover{border-color:var(--gline)}
+.secnav a.on{background:var(--red);border-color:var(--red);color:#fff}
+
+/* ===== الأقسام ===== */
+main{max-width:1140px;margin:auto;padding:0 18px}
+h2{text-align:center;font-size:34px;font-weight:900;margin:34px 0 6px}
+.sec{padding:26px 0 18px}
+.sec-head{text-align:center;margin-bottom:26px}
+.sec-head .num{display:inline-block;font-weight:900;font-size:13px;color:var(--gold);letter-spacing:2px;border:1px solid var(--gline);border-radius:20px;padding:1px 12px;margin-bottom:8px}
+.sec-head h3{font-size:clamp(24px,4vw,30px);font-weight:900}
+.sec-head p{color:var(--muted);margin-top:4px}
+.grid{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
+
+/* ===== البطاقات ===== */
+.card{position:relative;flex:1 1 300px;max-width:350px;display:flex;flex-direction:column;text-align:center;
+  background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--gline);border-radius:22px;padding:30px 22px 22px;
+  box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 22px rgba(212,175,55,.12);
+  transform:perspective(900px) translateY(var(--lift,0px)) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .35s;will-change:transform}
+/* لمعة بتمشي مع الماوس جوه البطاقة */
+.card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(243,217,122,.13),transparent 60%)}
+.card:hover::before{opacity:1}
+.card:hover{--lift:-10px;--sc:1.02;border-color:var(--gold);
+  box-shadow:0 28px 54px rgba(0,0,0,.7),0 0 0 1px rgba(212,175,55,.35),0 0 38px rgba(212,175,55,.32)}
+.card:hover .em{transform:scale(1.1) rotate(-6deg)}
+.card .em{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+/* البطاقات المميزة: إضاءة حمرا بتنبض بهدوء */
+.card.hot{border:2px solid var(--red);background:linear-gradient(180deg,#1d0d10,var(--surface));animation:glow 3.2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 22px rgba(227,6,19,.28)}50%{box-shadow:0 18px 44px rgba(0,0,0,.6),0 0 40px rgba(227,6,19,.48)}}
+.card.hot::before{background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(255,60,70,.16),transparent 60%)}
+.card.hot:hover{border-color:#ff2a38;animation:none;box-shadow:0 28px 56px rgba(0,0,0,.7),0 0 0 1px rgba(255,42,56,.4),0 0 56px rgba(227,6,19,.55)}
+.card:active{--sc:.99}
+@media (prefers-reduced-motion:reduce){.card,.card .em{transition:none}.card.hot{animation:none}.card:hover{--lift:0px;--sc:1}}
+.tag{position:absolute;top:-13px;right:50%;transform:translateX(50%);background:#1a1a1e;border:1px solid var(--gold);color:var(--gold2);border-radius:20px;padding:1px 16px;font-weight:800;font-size:13px;white-space:nowrap}
+.card.hot .tag{background:var(--red);border-color:var(--red);color:#fff}
+.card .em{width:78px;height:78px;margin:0 auto 12px;display:grid;place-items:center;font-size:40px;border-radius:50%;
+  background:radial-gradient(circle at 50% 35%,rgba(212,175,55,.22),rgba(227,6,19,.12) 60%,transparent 72%);border:1px solid var(--line)}
+.card h3{font-size:22px;font-weight:900;margin-bottom:4px}
+.card .desc{color:var(--muted);font-size:15px;margin-bottom:6px}
+.card .feat{list-style:none;padding:0;margin:10px 0 4px;text-align:right;font-size:15px;color:#e6e6ea}
+.card .feat li{position:relative;padding:7px 26px 7px 0;border-bottom:1px solid var(--line)}
+.card .feat li:last-child{border-bottom:0}
+.card .feat li::before{content:'✓';position:absolute;right:2px;top:7px;color:var(--gold);font-weight:900}
+.card .feat li.more{display:none}
+.card.open .feat li.more{display:block}
+.morebtn{background:none;border:0;color:var(--gold2);font:700 14px Tajawal;cursor:pointer;padding:6px 0}
+.price{margin-top:auto;padding-top:14px;display:flex;align-items:baseline;justify-content:center;gap:8px;flex-wrap:wrap}
+.price b{font-size:42px;font-weight:900;color:#fff;line-height:1}
+.price span{font-size:16px;color:var(--gold2);font-weight:700}
+.cta{margin-top:16px;width:100%;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border:0;border-radius:14px;padding:13px;font:800 18px Tajawal;cursor:pointer;transition:filter .2s,transform .2s}
+.cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.cta:disabled{opacity:.5;cursor:not-allowed;filter:none;transform:none}
+
+/* ===== لماذا نحن ===== */
+.trust{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:40px 0 50px}
+.trust div{text-align:center;border:1px solid var(--line);border-radius:18px;padding:20px 14px;background:var(--surface)}
+.trust span{font-size:30px}
+.trust b{display:block;font-size:18px;margin-top:4px}
+.trust small{color:var(--muted);font-size:14px}
+
+/* ===== الفوتر وزرار الواتساب ===== */
+footer{text-align:center;padding:30px 18px 100px;border-top:1px solid var(--line);color:var(--muted)}
 footer a{color:var(--gold2);text-decoration:none;font-weight:700}
-.cartbtn{position:fixed;left:18px;bottom:18px;background:var(--red);border:3px solid var(--gold2);color:#fff;border-radius:40px;padding:10px 20px;font:800 20px Tajawal;cursor:pointer;z-index:5;box-shadow:0 0 24px rgba(209,0,31,.6)}
-.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,100%);background:#0e0e0e;border-right:3px solid var(--gold);transform:translateX(-105%);transition:.3s;z-index:10;display:flex;flex-direction:column}
+.wafab{position:fixed;left:18px;bottom:18px;z-index:5;display:flex;align-items:center;gap:8px;background:#25D366;color:#fff;text-decoration:none;font:800 17px Tajawal;border-radius:40px;padding:12px 20px;box-shadow:0 10px 28px rgba(37,211,102,.4)}
+@media(max-width:600px){.wafab span{display:none}.wafab{padding:14px 16px;font-size:22px}}
+
+/* ===== السلة (بتظهر بس لو فيه منتجات رقمية) ===== */
+.cartbtn{position:fixed;left:18px;bottom:84px;background:var(--red);border:0;color:#fff;border-radius:40px;padding:10px 20px;font:800 20px Tajawal;cursor:pointer;z-index:5;box-shadow:0 0 24px rgba(227,6,19,.5)}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,100%);background:#0e0e10;border-right:1px solid var(--gline);transform:translateX(-105%);transition:.3s;z-index:10;display:flex;flex-direction:column}
 .drawer.open{transform:none}
 .overlay{position:fixed;inset:0;background:#000a;opacity:0;pointer-events:none;transition:.3s;z-index:9}
 .overlay.on{opacity:1;pointer-events:auto}
-.dhead{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:2px solid #d4af3744;font-size:22px}
+.dhead{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);font-size:22px}
 .dhead button{background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
 #items{flex:1;overflow:auto;padding:10px 18px}
-.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff22}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .row .n{flex:1;font-weight:700}
 .row button{background:#222;color:#fff;border:1px solid var(--gold);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:18px}
-.dfoot{padding:16px 18px;border-top:2px solid #d4af3744}
+.dfoot{padding:16px 18px;border-top:1px solid var(--line)}
 .total{font-size:20px}.total b{color:var(--gold2)}
 .wa{display:block;text-align:center;margin-top:10px;color:var(--gold2);cursor:pointer}
 .msg{margin-top:8px;color:#ff8a8a;font-size:14px;text-align:center}
 .empty{text-align:center;color:#999;padding:40px 0}
-
-.card{cursor:pointer;transition:transform .2s}.card:hover{transform:translateY(-4px)}
-.pm{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
-.pm.on{display:flex}
-.pbox{position:relative;background:linear-gradient(165deg,#1b1b1b,#050505);border:4px solid var(--gold);border-radius:24px;padding:26px 22px;width:min(460px,100%);max-height:90vh;overflow:auto;text-align:center;box-shadow:0 0 40px rgba(212,175,55,.3)}
-.pbox .em{font-size:64px}.pbox h2{margin:8px 0;font-size:24px;color:var(--gold2)}
-.pbox .pd{color:#ccc;margin:0 0 12px}
-.pbox ul{list-style:none;padding:0;margin:12px 0;text-align:right}.pbox li{padding:6px 0;border-bottom:1px solid #2a2a2a;font-size:16px}
-.pbox .price{font-size:34px;font-weight:800;color:var(--gold2);margin:12px 0}.pbox .price small{font-size:16px}
-.ptag{display:inline-block;background:var(--red);border:2px solid var(--gold2);border-radius:18px;padding:0 14px;font-weight:800;font-size:14px}
-.pbtn{width:100%;background:linear-gradient(90deg,#b30019,#d4122a);color:#fff;border:2px solid var(--gold2);border-radius:30px;padding:11px;font:800 19px Tajawal;cursor:pointer}
-.px{position:absolute;top:10px;left:12px;background:none;border:0;color:#fff;font-size:22px;cursor:pointer}

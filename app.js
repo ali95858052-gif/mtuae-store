@@ -8,43 +8,91 @@ const $ = (id) => document.getElementById(id);
 const isSoon = (p) => p.soon === true || (p.tag || '').includes('قريب');
 const save = () => localStorage.setItem('cart', JSON.stringify(cart));
 
+// أقسام المتجر بالترتيب: كل خدمة بتتحط في قسمها حسب cat في products.json
+const SECTIONS = [
+  { cat: 'ads',    icon: '📣', title: 'التسويق الممول',      sub: 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان' },
+  { cat: 'social', icon: '📱', title: 'إدارة السوشيال ميديا', sub: 'نشتغل على حساباتك بالكامل كل شهر · ميزانية الإعلانات منفصلة' },
+  { cat: 'media',  icon: '🎬', title: 'الفيديو والتصميم',     sub: 'فيديوهات إعلانية وتصاميم بهوية علامتك' },
+  { cat: 'web',    icon: '🌐', title: 'تصميم المواقع',        sub: 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة' },
+];
+const HOT = ['الأكثر طلبًا', 'الأشمل'];   // البطاقات المميزة بإطار أحمر
+const SHOW = 5;                            // عدد المميزات الظاهرة قبل "عرض الكل"
+const FOLD = 7;                            // نخبّي الباقي بس لو المميزات أكتر من 7
+
 async function init() {
   products = await (await fetch('products.json')).json();
-  // نقسّم المتجر: خدمات التصميم فوق، والمنتجات الرقمية تحت، وكل قسم بعنوان
-  const head = (t, sub) => `<div class="sec-head" style="grid-column:1/-1;text-align:center;margin:18px 0 4px">
-      <h3 style="font-size:1.45rem;font-weight:900;margin:0">${t}</h3>
-      <p style="opacity:.75;margin:6px 0 0">${sub}</p></div>`;
-  const ads = products.filter(p => p.type === 'service' && p.cat === 'ads');
-  const social = products.filter(p => p.type === 'service' && p.cat === 'social');
-  const media = products.filter(p => p.type === 'service' && p.cat === 'media');
-  const services = products.filter(p => p.type === 'service' && !['ads', 'social', 'media'].includes(p.cat));
-  const digital = products.filter(p => p.type !== 'service');
-  const card = p => `
-    <div class="card">
+  const fmt = n => Number(n).toLocaleString('en-US');
+
+  const card = p => {
+    // لو مفيش features بنقسم الوصف اللي فيه " · " لقائمة
+    let desc = p.desc || '', feats = p.features;
+    if (!feats && desc.includes(' · ')) { const parts = desc.split(' · '); desc = parts.shift(); feats = parts; }
+    const list = feats ? `<ul class="feat">${feats.map((f, i) => `<li${feats.length > FOLD && i >= SHOW ? ' class="more"' : ''}>${f}</li>`).join('')}</ul>
+      ${feats.length > FOLD ? `<button class="morebtn" onclick="toggleMore(this)">+ عرض كل المميزات (${feats.length})</button>` : ''}` : '';
+    const btn = isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
+      : p.type === 'service' ? `<button class="cta" onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
+      : `<button class="cta" onclick="add('${p.id}')">أضف للسلة 🛒</button>`;
+    return `<article class="card${HOT.includes(p.tag) ? ' hot' : ''}">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
-      <p>${p.desc}</p>
-      ${p.features ? `<ul class="feat">${p.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul>` : ''}
-      <div class="price">${p.price.toLocaleString('en-US')} <small>درهم${p.per ? ' / ' + p.per : ''}</small></div>
-      ${isSoon(p)
-        ? `<button disabled style="opacity:.55;cursor:not-allowed">قريبًا ⏳</button>`
-        : p.type === 'service'
-        ? `<button onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
-        : `<button onclick="add('${p.id}')">أضف للسلة 🛒</button>`}
-    </div>`;
-  $('grid').innerHTML =
-    (ads.length ? head('📣 التسويق الممول', 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان · اطلبها عبر واتساب') + ads.map(card).join('') : '') +
-    (social.length ? head('📱 إدارة السوشيال ميديا', 'نشتغل على حساباتك بالكامل كل شهر · ميزانية الإعلانات منفصلة · اطلبها عبر واتساب') + social.map(card).join('') : '') +
-    (media.length ? head('🎬 الفيديو والتصميم', 'فيديوهات إعلانية وتصاميم بهوية علامتك · اطلبها عبر واتساب') + media.map(card).join('') : '') +
-    (services.length ? head('🌐 تصميم المواقع', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
-    (digital.length ? head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('') : '');
+      ${desc ? `<p class="desc">${desc}</p>` : ''}
+      ${list}
+      <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
+      ${btn}
+    </article>`;
+  };
+
+  const known = SECTIONS.map(s => s.cat);
+  const secs = SECTIONS.map(s => ({ ...s, items: products.filter(p => p.type === 'service' && p.cat === s.cat) }));
+  const other = products.filter(p => p.type === 'service' && !known.includes(p.cat));
+  if (other.length) secs.push({ cat: 'other', icon: '✨', title: 'خدمات أخرى', sub: 'اطلبها عبر واتساب', items: other });
+  const digital = products.filter(p => p.type !== 'service');
+  if (digital.length) secs.push({ cat: 'digital', icon: '📦', title: 'المنتجات الرقمية', sub: 'اشتري، حمّل، وابدأ فورًا', items: digital });
+  const shown = secs.filter(s => s.items.length);
+
+  $('grid').innerHTML = shown.map((s, i) => `
+    <section class="sec" id="sec-${s.cat}">
+      <div class="sec-head"><span class="num">${String(i + 1).padStart(2, '0')}</span>
+        <h3>${s.icon} ${s.title}</h3><p>${s.sub}</p></div>
+      <div class="grid">${s.items.map(card).join('')}</div>
+    </section>`).join('');
+
+  // القائمة السريعة فوق: تودّي على القسم وتنوّر القسم الحالي
+  $('secnav').innerHTML = shown.map(s => `<a href="#sec-${s.cat}" data-cat="${s.cat}">${s.icon} ${s.title}</a>`).join('');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      document.querySelectorAll('.secnav a').forEach(a => a.classList.toggle('on', a.dataset.cat === e.target.id.slice(4)));
+      const on = document.querySelector('.secnav a.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }), { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('.sec').forEach(el => io.observe(el));
+  }
+
+  // حركة البطاقة مع الماوس (على الكمبيوتر بس، وبهدوء)
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
+    document.querySelectorAll('.card').forEach(c => {
+      c.addEventListener('pointermove', e => {
+        const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.setProperty('--ry', ((x - .5) * 8).toFixed(2) + 'deg');
+        c.style.setProperty('--rx', ((.5 - y) * 6).toFixed(2) + 'deg');
+        c.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        c.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      });
+      c.addEventListener('pointerleave', () => { c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg'); });
+    });
+  }
+
   // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
   $('openCart').style.display = digital.some(p => !isSoon(p)) ? '' : 'none';
-  // الخدمات (تصميم المواقع) ما تدخلش السلة ولا الدفع الأونلاين
   Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service' || isSoon(p)) delete cart[id]; });
   save();
   render();
+}
+
+function toggleMore(b) {
+  const c = b.closest('.card'); const open = c.classList.toggle('open');
+  b.textContent = open ? '− إخفاء المميزات' : `+ عرض كل المميزات (${c.querySelectorAll('.feat li').length})`;
 }
 
 // خدمة (زي تصميم المواقع): تفتح واتساب برسالة جاهزة بدل السلة
