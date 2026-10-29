@@ -33,7 +33,9 @@ async function init() {
   $('grid').innerHTML =
     (ads.length ? head('📣 التسويق الممول', 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان · اطلبها عبر واتساب') + ads.map(card).join('') : '') +
     (services.length ? head('🌐 تصميم المواقع', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
-    head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('');
+    (digital.length ? head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('') : '');
+  // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
+  $('openCart').style.display = digital.some(p => !isSoon(p)) ? '' : 'none';
   // الخدمات (تصميم المواقع) ما تدخلش السلة ولا الدفع الأونلاين
   Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service' || isSoon(p)) delete cart[id]; });
   save();
