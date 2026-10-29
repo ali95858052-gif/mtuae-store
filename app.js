@@ -4,6 +4,8 @@ let products = [];
 let cart = JSON.parse(localStorage.getItem('cart') || '{}'); // { id: qty }
 
 const $ = (id) => document.getElementById(id);
+// المنتج اللي عليه شارة "قريبًا" (أو soon: true) ما يتباعش لحد ما يجهز
+const isSoon = (p) => p.soon === true || (p.tag || '').includes('قريب');
 const save = () => localStorage.setItem('cart', JSON.stringify(cart));
 
 async function init() {
@@ -12,7 +14,8 @@ async function init() {
   const head = (t, sub) => `<div class="sec-head" style="grid-column:1/-1;text-align:center;margin:18px 0 4px">
       <h3 style="font-size:1.45rem;font-weight:900;margin:0">${t}</h3>
       <p style="opacity:.75;margin:6px 0 0">${sub}</p></div>`;
-  const services = products.filter(p => p.type === 'service');
+  const ads = products.filter(p => p.type === 'service' && p.cat === 'ads');
+  const services = products.filter(p => p.type === 'service' && p.cat !== 'ads');
   const digital = products.filter(p => p.type !== 'service');
   const card = p => `
     <div class="card">
@@ -21,15 +24,18 @@ async function init() {
       <h3>${p.name}</h3>
       <p>${p.desc}</p>
       <div class="price">${p.price} <small>درهم</small></div>
-      ${p.type === 'service'
+      ${isSoon(p)
+        ? `<button disabled style="opacity:.55;cursor:not-allowed">قريبًا ⏳</button>`
+        : p.type === 'service'
         ? `<button onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
         : `<button onclick="add('${p.id}')">أضف للسلة 🛒</button>`}
     </div>`;
   $('grid').innerHTML =
-    (services.length ? head('🌐 خدمات التصميم', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
+    (ads.length ? head('📣 التسويق الممول', 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان · اطلبها عبر واتساب') + ads.map(card).join('') : '') +
+    (services.length ? head('🌐 تصميم المواقع', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
     head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('');
   // الخدمات (تصميم المواقع) ما تدخلش السلة ولا الدفع الأونلاين
-  Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service') delete cart[id]; });
+  Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service' || isSoon(p)) delete cart[id]; });
   save();
   render();
 }
@@ -41,7 +47,7 @@ function orderService(id) {
   window.open(p.wa || `https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، أريد طلب ' + p.name + ' (' + p.price + ' درهم)')}`, '_blank');
 }
 
-function add(id) { cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }
+function add(id) { const p = products.find(x => x.id === id); if (!p || isSoon(p) || p.type === 'service') return; cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }
 function change(id, d) { cart[id] = (cart[id] || 0) + d; if (cart[id] <= 0) delete cart[id]; save(); render(); }
 
 function render() {
