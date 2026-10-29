@@ -15,7 +15,8 @@ async function init() {
       <h3 style="font-size:1.45rem;font-weight:900;margin:0">${t}</h3>
       <p style="opacity:.75;margin:6px 0 0">${sub}</p></div>`;
   const ads = products.filter(p => p.type === 'service' && p.cat === 'ads');
-  const services = products.filter(p => p.type === 'service' && p.cat !== 'ads');
+  const social = products.filter(p => p.type === 'service' && p.cat === 'social');
+  const services = products.filter(p => p.type === 'service' && p.cat !== 'ads' && p.cat !== 'social');
   const digital = products.filter(p => p.type !== 'service');
   const card = p => `
     <div class="card">
@@ -23,7 +24,8 @@ async function init() {
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
       <p>${p.desc}</p>
-      <div class="price">${p.price} <small>درهم</small></div>
+      ${p.features ? `<ul class="feat">${p.features.map(f => `<li>✓ ${f}</li>`).join('')}</ul>` : ''}
+      <div class="price">${p.price.toLocaleString('en-US')} <small>درهم${p.per ? ' / ' + p.per : ''}</small></div>
       ${isSoon(p)
         ? `<button disabled style="opacity:.55;cursor:not-allowed">قريبًا ⏳</button>`
         : p.type === 'service'
@@ -32,6 +34,7 @@ async function init() {
     </div>`;
   $('grid').innerHTML =
     (ads.length ? head('📣 التسويق الممول', 'إعلانات على إنستغرام وفيسبوك · السعر شامل ميزانية الإعلان · اطلبها عبر واتساب') + ads.map(card).join('') : '') +
+    (social.length ? head('📱 إدارة السوشيال ميديا', 'نشتغل على حساباتك بالكامل كل شهر · ميزانية الإعلانات منفصلة · اطلبها عبر واتساب') + social.map(card).join('') : '') +
     (services.length ? head('🌐 تصميم المواقع', 'مواقع احترافية لنشاطك · تسليم خلال 72 ساعة · اطلبها عبر واتساب') + services.map(card).join('') : '') +
     (digital.length ? head('📦 المنتجات الرقمية', 'اشتري، حمّل، وابدأ فورًا') + digital.map(card).join('') : '');
   // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
