@@ -189,6 +189,69 @@ function openDetails(id) {
   track('ViewContent', { content_name: p.name, value: p.price, currency: 'AED' });
   setTimeout(() => $('mclose').focus(), 50);
 }
+// ===== اعرف باقتك المناسبة: 3 أسئلة وبعدها ترشيح بزرار واتساب =====
+const QUIZ = {
+  goal: { q: 'إيه أهم حاجة نشاطك محتاجها دلوقتي؟', opts: [
+    { v: 'ads',    t: 'عملاء ورسائل بسرعة',        s: 'إعلانات ممولة تجيب نتيجة' },
+    { v: 'social', t: 'حد يدير حساباتي بالكامل',    s: 'محتوى ونشر وتقارير كل شهر' },
+    { v: 'media',  t: 'فيديو إعلاني لمنتجاتي',      s: 'من صورك من غير تصوير' },
+    { v: 'web',    t: 'موقع لنشاطي',               s: 'موقع احترافي باسمك' } ] },
+  ads:    { q: 'ميزانيتك للإعلانات قد إيه؟', opts: [
+    { v: 'a1', t: 'أقل من 1,000 درهم', s: 'عايز أجرّب الأول' },
+    { v: 'a2', t: 'من 1,000 لـ 2,000 درهم', s: 'عايز نتيجة واضحة' },
+    { v: 'a3', t: 'أكتر من 2,000 درهم', s: 'عايز أكبر نتيجة ممكنة' } ] },
+  social: { q: 'محتاج إدارة لأي درجة؟', opts: [
+    { v: 's1', t: '3 منصات ومحتوى منتظم', s: 'فيسبوك وإنستغرام وتيك توك' },
+    { v: 's2', t: 'كل حاجة', s: 'كل المنصات + موقع + تصوير شهري' } ] },
+  media:  { q: 'محتاج كام فيديو؟', opts: [
+    { v: 'v1', t: 'فيديو واحد', s: 'لمنتج أو عرض واحد' },
+    { v: 'v2', t: '3 فيديوهات أو أكتر', s: 'لأكتر من منتج أو عرض' } ] },
+  web:    { q: 'موقعك محتاج يكون عامل إزاي؟', opts: [
+    { v: 'p7', t: 'صفحة واحدة', s: 'تعريف بنشاطك وخدماتك وتواصل' },
+    { v: 'p8', t: 'موقع كامل', s: 'أكتر من صفحة لشركتك' } ] },
+  biz:    { q: 'نشاطك في أنهي مجال؟', opts: [
+    { v: 'مطعم أو كافيه', t: 'مطعم أو كافيه' }, { v: 'صالون أو تجميل', t: 'صالون أو تجميل' },
+    { v: 'عقارات', t: 'عقارات' }, { v: 'متجر أو منتجات', t: 'متجر أو منتجات' },
+    { v: 'خدمات أو شركة', t: 'خدمات أو شركة' }, { v: 'مجال تاني', t: 'مجال تاني' } ] },
+};
+let qa = {};
+function openQuiz() { qa = {}; quizStep('goal'); $('quiz').classList.add('on'); document.body.classList.add('lock'); if (typeof fbq === 'function') fbq('trackCustom', 'QuizStart'); setTimeout(() => $('qclose').focus(), 50); }
+function closeQuiz() { $('quiz').classList.remove('on'); document.body.classList.remove('lock'); }
+function quizStep(key) {
+  const st = QUIZ[key], n = key === 'goal' ? 1 : key === 'biz' ? 3 : 2;
+  $('qbar').style.width = (n / 3 * 100) + '%';
+  $('qbody').innerHTML = `
+    <span class="qn">سؤال ${n} من 3</span>
+    <h2 id="qtitle">${st.q}</h2>
+    <div class="qopts${key === 'biz' ? ' two' : ''}">${st.opts.map(o => `<button class="qopt" data-v="${o.v}">${key === 'goal' ? icon(o.v) : ''}<b>${o.t}</b>${o.s ? `<span>${o.s}</span>` : ''}</button>`).join('')}</div>
+    ${n > 1 ? `<button class="qback" onclick="quizStep('${n === 3 ? qa.goal : 'goal'}')">→ رجوع</button>` : ''}`;
+  $('qbody').querySelectorAll('.qopt').forEach(b => b.onclick = () => {
+    const v = b.dataset.v;
+    if (key === 'goal') { qa.goal = v; quizStep(v); }
+    else if (key === 'biz') { qa.biz = v; quizResult(); }
+    else { qa.pick = v; quizStep('biz'); }
+  });
+}
+function quizResult() {
+  const p = products.find(x => x.id === qa.pick); if (!p) return;
+  let desc = p.desc || '', feats = p.features;
+  if (!feats && desc.includes(' · ')) { const parts = desc.split(' · '); desc = parts.shift(); feats = parts; }
+  const msg = `مرحبا، جاوبت على "اعرف باقتك المناسبة" في المتجر\nنشاطي: ${qa.biz}\nالباقة المقترحة: ${p.name} (${p.price} درهم${p.per ? ' / ' + p.per : ''})\nحابب أعرف التفاصيل وأبدأ`;
+  $('qbar').style.width = '100%';
+  $('qbody').innerHTML = `
+    <span class="qn">الباقة المناسبة لنشاطك</span>
+    <div class="em">${p.emoji}</div>
+    <h2 id="qtitle">${p.name}</h2>
+    ${desc ? `<p class="mdesc">${desc}</p>` : ''}
+    ${feats ? `<ul class="feat">${feats.slice(0, 4).map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+    <div class="price"><b>${Number(p.price).toLocaleString('en-US')}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
+    <a class="cta qwa" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank">اطلب الباقة دي عبر واتساب 💬</a>
+    <div class="qrow"><button class="qback" onclick="closeQuiz();openDetails('${p.id}')">كل تفاصيل الباقة</button><button class="qback" onclick="openQuiz()">↻ جاوب تاني</button></div>`;
+  $('qbody').querySelector('.qwa').addEventListener('click', () => { track('Lead', { content_name: 'Quiz: ' + p.name, value: p.price, currency: 'AED' }); track('Contact', { content_name: 'Quiz: ' + p.name }); });
+  if (typeof fbq === 'function') fbq('trackCustom', 'QuizResult', { content_name: p.name, business: qa.biz });
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuiz(); });
+
 function closeDetails() { $('modal').classList.remove('on'); document.body.classList.remove('lock'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
 
