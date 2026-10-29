@@ -9,31 +9,28 @@ const save = () => localStorage.setItem('cart', JSON.stringify(cart));
 async function init() {
   products = await (await fetch('products.json')).json();
   $('grid').innerHTML = products.map(p => `
-    <div class="card" onclick="openProduct('${p.id}')">
+    <div class="card">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
       <p>${p.desc}</p>
       <div class="price">${p.price} <small>درهم</small></div>
-      <button onclick="event.stopPropagation();add('${p.id}')">أضف للسلة 🛒</button>
+      ${p.type === 'service'
+        ? `<button onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
+        : `<button onclick="add('${p.id}')">أضف للسلة 🛒</button>`}
     </div>`).join('');
+  // الخدمات (تصميم المواقع) ما تدخلش السلة ولا الدفع الأونلاين
+  Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service') delete cart[id]; });
+  save();
   render();
 }
 
-function openProduct(id) {
+// خدمة (زي تصميم المواقع): تفتح واتساب برسالة جاهزة بدل السلة
+function orderService(id) {
   const p = products.find(x => x.id === id); if (!p) return;
-  $('pmBody').innerHTML = `
-    <div class="em">${p.emoji}</div>
-    ${p.tag ? `<span class="ptag">${p.tag}</span>` : ''}
-    <h2>${p.name}</h2>
-    <p class="pd">${p.desc}</p>
-    <ul>${(p.includes || []).map(i => `<li>✅ ${i}</li>`).join('')}</ul>
-    <div class="price">${p.price} <small>درهم</small></div>
-    <button class="pbtn" onclick="add('${p.id}');closeProduct()">أضف للسلة 🛒</button>`;
-  $('pm').classList.add('on');
+  if (typeof fbq === 'function') fbq('track', 'Lead', { content_name: p.name, value: p.price, currency: 'AED' });
+  window.open(p.wa || `https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، أريد طلب ' + p.name + ' (' + p.price + ' درهم)')}`, '_blank');
 }
-function closeProduct() { $('pm').classList.remove('on'); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProduct(); });
 
 function add(id) { cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }
 function change(id, d) { cart[id] = (cart[id] || 0) + d; if (cart[id] <= 0) delete cart[id]; save(); render(); }
