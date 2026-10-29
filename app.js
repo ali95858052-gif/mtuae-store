@@ -21,15 +21,24 @@ const ICONS = {
 const icon = k => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ICONS.other}</svg>`;
 
 // كل قسم: عنوان + جملة تسويقية + نقاط قصيرة
+// كل نقطة (chip): t = النص، tip = شرح بيظهر لما تلمسها، find = كلمات بتتنوّر جوه البطاقات، go = بطاقة تتنوّر وتروحلها، hl = مميزة بالأحمر
 const SECTIONS = [
-  { cat: 'ads',    title: 'التسويق الممول',      tagline: 'إعلانات تجيبلك عملاء حقيقيين، مش مجرد لايكات',
-    chips: ['إنستغرام وفيسبوك', 'هدف مبيعات أو رسائل واتساب', '★ السعر شامل ميزانية الإعلان'] },
-  { cat: 'social', title: 'إدارة السوشيال ميديا', tagline: 'نتولّى حساباتك بالكامل، وإنت ركّز على شغلك',
-    chips: ['محتوى + ريلز + قصص', 'تقارير أداء شهرية', 'ميزانية الإعلانات منفصلة'] },
-  { cat: 'media',  title: 'الفيديو والتصميم',     tagline: 'فيديو إعلاني من صورك، من غير تصوير ولا مونتاج',
-    chips: ['جاهز لإنستغرام وتيك توك', 'بألوان علامتك وشعارك', '★ يبدأ من 39 درهم'] },
-  { cat: 'web',    title: 'تصميم المواقع',        tagline: 'موقع احترافي باسم نشاطك، جاهز خلال 72 ساعة',
-    chips: ['رابط باسم شركتك', 'استضافة سنة + SSL', 'تعديل فوري بالمحادثة'] },
+  { cat: 'ads', title: 'التسويق الممول', tagline: 'إعلانات تجيبلك عملاء حقيقيين، مش مجرد لايكات', chips: [
+    { t: 'إنستغرام وفيسبوك', find: 'إنستغرام', tip: 'إعلانك بيظهر في الفيد والستوري والريلز على المنصتين' },
+    { t: 'هدف مبيعات أو رسائل واتساب', find: 'هدف', tip: 'بنختار هدف الحملة حسب نشاطك: بيع مباشر أو عملاء يكلّموك على واتساب' },
+    { t: 'السعر شامل ميزانية الإعلان', find: 'شامل ميزانية', hl: 1, tip: 'مش هتدفع أي مبلغ زيادة لميتا، الميزانية جوه سعر الباقة' } ] },
+  { cat: 'social', title: 'إدارة السوشيال ميديا', tagline: 'نتولّى حساباتك بالكامل، وإنت ركّز على شغلك', chips: [
+    { t: 'محتوى + ريلز + قصص', find: 'ريلز', tip: 'بوستات وريلز وقصص بتصميم احترافي ونشر منتظم طول الشهر' },
+    { t: 'تقارير أداء شهرية', find: 'تقارير', tip: 'كل شهر تقرير بالأرقام: الوصول والتفاعل والرسائل والمبيعات' },
+    { t: 'ميزانية الإعلانات منفصلة', find: 'حملات|الحملات', tip: 'إدارة الحملات من ضمن الخطة، والميزانية بتدفعها لميتا وجوجل مباشرة' } ] },
+  { cat: 'media', title: 'الفيديو والتصميم', tagline: 'فيديو إعلاني من صورك، من غير تصوير ولا مونتاج', chips: [
+    { t: 'جاهز لإنستغرام وتيك توك', find: '1080p', tip: 'فيديو عمودي MP4 بجودة 1080p، تنزّله وتنشره على طول' },
+    { t: 'بألوان علامتك وشعارك', find: 'ألوان', tip: 'الفيديو بيطلع بهوية نشاطك: ألوانك وشعارك وخطوطك' },
+    { t: 'يبدأ من 39 درهم', go: 'v1', hl: 1, tip: 'فيديو إعلاني كامل بـ 39 درهم بس' } ] },
+  { cat: 'web', title: 'تصميم المواقع', tagline: 'موقع احترافي باسم نشاطك، جاهز خلال 72 ساعة', chips: [
+    { t: 'رابط باسم شركتك', find: 'رابط', tip: 'عنوان موقع باسم نشاطك مجانًا مع الباقة' },
+    { t: 'استضافة سنة + SSL', find: 'استضافة|SSL', tip: 'استضافة سنة كاملة وقفل أمان SSL، من غير أي مصاريف إضافية' },
+    { t: 'تعديل فوري بالمحادثة', find: 'تعديل', tip: 'عايز تغيّر حاجة؟ ابعتلنا على واتساب ونعدّلها على طول' } ] },
 ];
 const HOT = ['الأكثر طلبًا', 'الأشمل'];   // البطاقات المميزة بإطار أحمر
 const SHOW = 5;                            // عدد المميزات الظاهرة قبل "عرض الكل"
@@ -48,7 +57,7 @@ async function init() {
     const btn = isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
       : p.type === 'service' ? `<button class="cta" onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
       : `<button class="cta" onclick="add('${p.id}')">أضف للسلة 🛒</button>`;
-    return `<article class="card${HOT.includes(p.tag) ? ' hot' : ''}">
+    return `<article class="card${HOT.includes(p.tag) ? ' hot' : ''}" id="card-${p.id}" data-id="${p.id}" tabindex="0" aria-label="${p.name}">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
@@ -56,6 +65,7 @@ async function init() {
       ${list}
       <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
       ${btn}
+      <button class="details" onclick="openDetails('${p.id}')">تفاصيل الباقة وإزاي بنبدأ ←</button>
     </article>`;
   };
 
@@ -73,7 +83,7 @@ async function init() {
         <div class="eyebrow">${icon(s.cat)}<span>${String(i + 1).padStart(2, '0')}</span></div>
         <h3>${s.title}</h3>
         <p class="tagline">${s.tagline}</p>
-        ${s.chips.length ? `<div class="chips">${s.chips.map(c => c.startsWith('★') ? `<span class="hl">${c.slice(1).trim()}</span>` : `<span>${c}</span>`).join('')}</div>` : ''}
+        ${s.chips.length ? `<div class="chips">${s.chips.map((c, k) => `<button class="chip${c.hl ? ' hl' : ''}" data-sec="${s.cat}" data-k="${k}" aria-expanded="false">${c.t}<span class="tip" role="tooltip">${c.tip}</span></button>`).join('')}</div>` : ''}
       </div>
       <div class="grid">${s.items.map(card).join('')}</div>
     </section>`).join('');
@@ -105,6 +115,36 @@ async function init() {
     });
   }
 
+  // النقاط الصغيرة: تشرح نفسها وتنوّر مكانها جوه البطاقات
+  document.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', e => {
+    e.stopPropagation();
+    const was = ch.classList.contains('open');
+    document.querySelectorAll('.chip.open').forEach(o => { o.classList.remove('open'); o.setAttribute('aria-expanded', 'false'); });
+    if (was) return;
+    ch.classList.add('open'); ch.setAttribute('aria-expanded', 'true');
+    const c = SECTIONS.find(x => x.cat === ch.dataset.sec).chips[ch.dataset.k];
+    const sec = $('sec-' + ch.dataset.sec);
+    if (c.go) { const card = $('card-' + c.go); if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); flash(card); } return; }
+    if (c.find) {
+      const re = new RegExp(c.find);
+      sec.querySelectorAll('.card').forEach(card => card.querySelectorAll('.feat li, .desc').forEach(el => {
+        if (!re.test(el.textContent)) return;
+        if (el.classList.contains('more') && !card.classList.contains('open')) { const b = card.querySelector('.morebtn'); if (b) toggleMore(b); }
+        flash(el);
+      }));
+    }
+  }));
+  document.addEventListener('click', () => document.querySelectorAll('.chip.open').forEach(o => { o.classList.remove('open'); o.setAttribute('aria-expanded', 'false'); }));
+
+  // الضغط على البطاقة نفسها يفتح التفاصيل (الأزرار جواها بتشتغل عادي)
+  document.querySelectorAll('.card').forEach(c => {
+    c.addEventListener('click', e => { if (!e.target.closest('button, a')) openDetails(c.dataset.id); });
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target === c) openDetails(c.dataset.id); });
+  });
+
+  // أي رابط واتساب في الصفحة بيتسجّل في البيكسل كتواصل
+  document.querySelectorAll('a[href*="wa.me"]').forEach(a => a.addEventListener('click', () => track('Contact', { content_name: a.dataset.track || 'WhatsApp' })));
+
   // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
   $('openCart').style.display = digital.some(p => !isSoon(p)) ? '' : 'none';
   Object.keys(cart).forEach(id => { const p = products.find(x => x.id === id); if (!p || p.type === 'service' || isSoon(p)) delete cart[id]; });
@@ -117,10 +157,46 @@ function toggleMore(b) {
   b.textContent = open ? '− إخفاء المميزات' : `+ عرض كل المميزات (${c.querySelectorAll('.feat li').length})`;
 }
 
+const track = (ev, data) => { if (typeof fbq === 'function') fbq('track', ev, data); };
+
+// تنوير مؤقت لعنصر (سطر ميزة أو بطاقة)
+function flash(el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2200); }
+
+// نافذة التفاصيل: كل المميزات + خطوات البداية + زرار الطلب
+function openDetails(id) {
+  const p = products.find(x => x.id === id); if (!p) return;
+  let desc = p.desc || '', feats = p.features;
+  if (!feats && desc.includes(' · ')) { const parts = desc.split(' · '); desc = parts.shift(); feats = parts; }
+  const fmt = n => Number(n).toLocaleString('en-US');
+  $('mbody').innerHTML = `
+    ${p.tag ? `<span class="mtag">${p.tag}</span>` : ''}
+    <div class="em">${p.emoji}</div>
+    <h2 id="mtitle">${p.name}</h2>
+    ${desc ? `<p class="mdesc">${desc}</p>` : ''}
+    ${feats ? `<h4>الباقة فيها إيه؟</h4><ul class="feat">${feats.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+    <h4>إزاي بنبدأ؟</h4>
+    <ol class="steps">
+      <li><b>اطلب على واتساب</b><span>بتوصلنا رسالة جاهزة باسم الباقة</span></li>
+      <li><b>نتفق على التفاصيل</b><span>نفهم نشاطك وهدفك ونأكد المطلوب</span></li>
+      <li><b>نبدأ الشغل</b><span>خلال 24 ساعة من التأكيد</span></li>
+    </ol>
+    <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
+    ${isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
+      : `<button class="cta" onclick="orderService('${p.id}')">اطلب ${p.name} عبر واتساب 💬</button>`}
+    <a class="ask" href="https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، عندي سؤال عن ' + p.name)}" target="_blank" data-track="سؤال: ${p.name}">عندك سؤال قبل ما تطلب؟ اسألنا</a>`;
+  $('mbody').querySelector('.ask').addEventListener('click', () => track('Contact', { content_name: 'سؤال: ' + p.name }));
+  $('modal').classList.add('on'); document.body.classList.add('lock');
+  track('ViewContent', { content_name: p.name, value: p.price, currency: 'AED' });
+  setTimeout(() => $('mclose').focus(), 50);
+}
+function closeDetails() { $('modal').classList.remove('on'); document.body.classList.remove('lock'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
+
 // خدمة (زي تصميم المواقع): تفتح واتساب برسالة جاهزة بدل السلة
 function orderService(id) {
   const p = products.find(x => x.id === id); if (!p) return;
-  if (typeof fbq === 'function') fbq('track', 'Lead', { content_name: p.name, value: p.price, currency: 'AED' });
+  track('Lead', { content_name: p.name, value: p.price, currency: 'AED' });
+  track('Contact', { content_name: p.name });
   window.open(p.wa || `https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، أريد طلب ' + p.name + ' (' + p.price + ' درهم)')}`, '_blank');
 }
 
