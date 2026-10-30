@@ -22,7 +22,7 @@ const icon = k => `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="curr
 
 // كل قسم: عنوان + جملة تسويقية + نقاط قصيرة
 // كل نقطة (chip): t = النص، tip = شرح بيظهر لما تلمسها، find = كلمات بتتنوّر جوه البطاقات، go = بطاقة تتنوّر وتروحلها، hl = مميزة بالأحمر
-const SECTIONS = [
+let SECTIONS = [   // الافتراضي، وبيتبدّل باللي في site.json (اللي بتعدّله من لوحة التحكم)
   { cat: 'ads', title: 'التسويق الممول', tagline: 'إعلانات تجيبلك عملاء حقيقيين، مش مجرد لايكات', chips: [
     { t: 'إنستغرام وفيسبوك', find: 'إنستغرام', tip: 'إعلانك بيظهر في الفيد والستوري والريلز على المنصتين' },
     { t: 'هدف مبيعات أو رسائل واتساب', find: 'هدف', tip: 'بنختار هدف الحملة حسب نشاطك: بيع مباشر أو عملاء يكلّموك على واتساب' },
@@ -44,8 +44,33 @@ const HOT = ['الأكثر طلبًا', 'الأشمل'];   // البطاقات �
 const SHOW = 5;                            // عدد المميزات الظاهرة قبل "عرض الكل"
 const FOLD = 7;                            // نخبّي الباقي بس لو المميزات أكتر من 7
 
+// إحصائيات المتجر (بتظهر في لوحة التحكم)
+function stat(ev, extra) {
+  try {
+    const body = JSON.stringify(Object.assign({ ev }, extra || {}));
+    if (navigator.sendBeacon) navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' }));
+    else fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true });
+  } catch (e) {}
+}
+const waLink = text => `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
+const orderMsg = p => `مرحبا، أريد طلب ${p.name} (${Number(p.price).toLocaleString('en-US')} درهم${p.per ? ' / ' + p.per : ''})`;
+
+// نصوص المتجر من site.json: أي عنصر عليه data-t="hero.title1" بياخد النص بتاعه
+function applyTexts(site) {
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const v = el.dataset.t.split('.').reduce((o, k) => (o == null ? o : o[k]), site);
+    if (typeof v === 'string' && v.trim()) el.textContent = v;
+  });
+}
+
 async function init() {
-  products = await (await fetch('products.json')).json();
+  const [all, site] = await Promise.all([
+    fetch('products.json', { cache: 'no-cache' }).then(r => r.json()),
+    fetch('site.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null),
+  ]);
+  products = all.filter(p => !p.hidden);   // الخدمات المخفية من لوحة التحكم ما بتظهرش
+  if (site) { if (Array.isArray(site.sections) && site.sections.length) SECTIONS = site.sections; applyTexts(site); }
+  try { if (!sessionStorage.getItem('v')) { sessionStorage.setItem('v', 1); stat('visit'); } } catch (e) { stat('visit'); }
   const fmt = n => Number(n).toLocaleString('en-US');
 
   const card = p => {
@@ -143,7 +168,7 @@ async function init() {
   });
 
   // أي رابط واتساب في الصفحة بيتسجّل في البيكسل كتواصل
-  document.querySelectorAll('a[href*="wa.me"]').forEach(a => a.addEventListener('click', () => track('Contact', { content_name: a.dataset.track || 'WhatsApp' })));
+  document.querySelectorAll('a[href*="wa.me"]').forEach(a => a.addEventListener('click', () => { track('Contact', { content_name: a.dataset.track || 'WhatsApp' }); stat('contact', { src: a.dataset.track || 'واتساب' }); }));
 
   // زرار السلة يظهر بس لو فيه منتجات بتتشتري أونلاين
   $('openCart').style.display = digital.some(p => !isSoon(p)) ? '' : 'none';
@@ -183,8 +208,9 @@ function openDetails(id) {
     <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
     ${isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
       : `<button class="cta" onclick="orderService('${p.id}')">اطلب ${p.name} عبر واتساب 💬</button>`}
-    <a class="ask" href="https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، عندي سؤال عن ' + p.name)}" target="_blank" data-track="سؤال: ${p.name}">عندك سؤال قبل ما تطلب؟ اسألنا</a>`;
-  $('mbody').querySelector('.ask').addEventListener('click', () => track('Contact', { content_name: 'سؤال: ' + p.name }));
+    <a class="ask" href="${waLink('مرحبا، عندي سؤال عن ' + p.name)}" target="_blank">عندك سؤال قبل ما تطلب؟ اسألنا</a>`;
+  $('mbody').querySelector('.ask').addEventListener('click', () => { track('Contact', { content_name: 'سؤال: ' + p.name }); stat('ask', { id: p.id }); });
+  stat('details', { id: p.id });
   $('modal').classList.add('on'); document.body.classList.add('lock');
   track('ViewContent', { content_name: p.name, value: p.price, currency: 'AED' });
   setTimeout(() => $('mclose').focus(), 50);
@@ -215,16 +241,26 @@ const QUIZ = {
     { v: 'خدمات أو شركة', t: 'خدمات أو شركة' }, { v: 'مجال تاني', t: 'مجال تاني' } ] },
 };
 let qa = {};
-function openQuiz() { qa = {}; quizStep('goal'); $('quiz').classList.add('on'); document.body.classList.add('lock'); if (typeof fbq === 'function') fbq('trackCustom', 'QuizStart'); setTimeout(() => $('qclose').focus(), 50); }
+function openQuiz() { qa = {}; quizStep('goal'); $('quiz').classList.add('on'); document.body.classList.add('lock'); if (typeof fbq === 'function') fbq('trackCustom', 'QuizStart'); stat('quiz_start'); setTimeout(() => $('qclose').focus(), 50); }
+// الاختيارات اللي ليها خدمة ظاهرة بس (لو خفيت خدمة من لوحة التحكم، الأسئلة بتتظبط لوحدها)
+const visibleIn = cat => products.filter(p => p.type === 'service' && p.cat === cat);
+function quizOpts(key) {
+  const st = QUIZ[key];
+  if (key === 'goal') return st.opts.filter(o => visibleIn(o.v).length);
+  if (key === 'biz') return st.opts;
+  return st.opts.filter(o => products.some(p => p.id === o.v));
+}
 function closeQuiz() { $('quiz').classList.remove('on'); document.body.classList.remove('lock'); }
 function quizStep(key) {
-  const st = QUIZ[key], n = key === 'goal' ? 1 : key === 'biz' ? 3 : 2;
+  const st = QUIZ[key], n = key === 'goal' ? 1 : key === 'biz' ? 3 : 2, opts = quizOpts(key);
+  // لو القسم فيه خدمة واحدة أو الاختيارات اتخفت، نختار أول خدمة ظاهرة ونكمّل
+  if (key !== 'goal' && key !== 'biz' && opts.length < 2) { const first = opts[0] ? opts[0].v : (visibleIn(key)[0] || {}).id; if (first) { qa.pick = first; return quizStep('biz'); } }
   $('qbar').style.width = (n / 3 * 100) + '%';
   $('qbody').innerHTML = `
     <span class="qn">سؤال ${n} من 3</span>
     <h2 id="qtitle">${st.q}</h2>
-    <div class="qopts${key === 'biz' ? ' two' : ''}">${st.opts.map(o => `<button class="qopt" data-v="${o.v}">${key === 'goal' ? icon(o.v) : ''}<b>${o.t}</b>${o.s ? `<span>${o.s}</span>` : ''}</button>`).join('')}</div>
-    ${n > 1 ? `<button class="qback" onclick="quizStep('${n === 3 ? qa.goal : 'goal'}')">→ رجوع</button>` : ''}`;
+    <div class="qopts${key === 'biz' ? ' two' : ''}">${opts.map(o => `<button class="qopt" data-v="${o.v}">${key === 'goal' ? icon(o.v) : ''}<b>${o.t}</b>${o.s ? `<span>${o.s}</span>` : ''}</button>`).join('')}</div>
+    ${n > 1 ? `<button class="qback" onclick="quizStep('${n === 3 && quizOpts(qa.goal).length >= 2 ? qa.goal : 'goal'}')">→ رجوع</button>` : ''}`;
   $('qbody').querySelectorAll('.qopt').forEach(b => b.onclick = () => {
     const v = b.dataset.v;
     if (key === 'goal') { qa.goal = v; quizStep(v); }
@@ -233,7 +269,7 @@ function quizStep(key) {
   });
 }
 function quizResult() {
-  const p = products.find(x => x.id === qa.pick); if (!p) return;
+  const p = products.find(x => x.id === qa.pick) || visibleIn(qa.goal)[0]; if (!p) return closeQuiz();
   let desc = p.desc || '', feats = p.features;
   if (!feats && desc.includes(' · ')) { const parts = desc.split(' · '); desc = parts.shift(); feats = parts; }
   const msg = `مرحبا، جاوبت على "اعرف باقتك المناسبة" في المتجر\nنشاطي: ${qa.biz}\nالباقة المقترحة: ${p.name} (${p.price} درهم${p.per ? ' / ' + p.per : ''})\nحابب أعرف التفاصيل وأبدأ`;
@@ -245,10 +281,11 @@ function quizResult() {
     ${desc ? `<p class="mdesc">${desc}</p>` : ''}
     ${feats ? `<ul class="feat">${feats.slice(0, 4).map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
     <div class="price"><b>${Number(p.price).toLocaleString('en-US')}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
-    <a class="cta qwa" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank">اطلب الباقة دي عبر واتساب 💬</a>
+    <a class="cta qwa" href="${waLink(msg)}" target="_blank">اطلب الباقة دي عبر واتساب 💬</a>
     <div class="qrow"><button class="qback" onclick="closeQuiz();openDetails('${p.id}')">كل تفاصيل الباقة</button><button class="qback" onclick="openQuiz()">↻ جاوب تاني</button></div>`;
-  $('qbody').querySelector('.qwa').addEventListener('click', () => { track('Lead', { content_name: 'Quiz: ' + p.name, value: p.price, currency: 'AED' }); track('Contact', { content_name: 'Quiz: ' + p.name }); });
+  $('qbody').querySelector('.qwa').addEventListener('click', () => { track('Lead', { content_name: 'Quiz: ' + p.name, value: p.price, currency: 'AED' }); track('Contact', { content_name: 'Quiz: ' + p.name }); stat('quiz_order', { id: p.id, biz: qa.biz }); });
   if (typeof fbq === 'function') fbq('trackCustom', 'QuizResult', { content_name: p.name, business: qa.biz });
+  stat('quiz_done', { id: p.id, biz: qa.biz });
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuiz(); });
 
@@ -260,7 +297,8 @@ function orderService(id) {
   const p = products.find(x => x.id === id); if (!p) return;
   track('Lead', { content_name: p.name, value: p.price, currency: 'AED' });
   track('Contact', { content_name: p.name });
-  window.open(p.wa || `https://wa.me/${WA}?text=${encodeURIComponent('مرحبا، أريد طلب ' + p.name + ' (' + p.price + ' درهم)')}`, '_blank');
+  stat('order', { id: p.id });
+  window.open(waLink(orderMsg(p)), '_blank');
 }
 
 function add(id) { const p = products.find(x => x.id === id); if (!p || isSoon(p) || p.type === 'service') return; cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }

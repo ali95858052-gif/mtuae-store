@@ -26,12 +26,12 @@ fbq('track', 'PageView');
 <body>
 <header class="hero">
   <a href="https://instagram.com/mtuae_fans" target="_blank" aria-label="MT UAE FANS على إنستغرام"><img class="logo" src="assets/logo.png" alt="MT UAE FANS"></a>
-  <span class="badge">MT UAE FANS · دبي</span>
-  <h1>كل اللي نشاطك يحتاجه<br><em>عشان يكبر أونلاين</em></h1>
-  <p>إعلانات ممولة، إدارة سوشيال ميديا، فيديوهات إعلانية، ومواقع احترافية. فريق واحد، ونتائج تشوفها بالأرقام.</p>
+  <span class="badge" data-t="hero.badge">MT UAE FANS · دبي</span>
+  <h1><span data-t="hero.title1">كل اللي نشاطك يحتاجه</span><br><em data-t="hero.title2">عشان يكبر أونلاين</em></h1>
+  <p data-t="hero.sub">إعلانات ممولة، إدارة سوشيال ميديا، فيديوهات إعلانية، ومواقع احترافية. فريق واحد، ونتائج تشوفها بالأرقام.</p>
   <div class="hero-ctas">
-    <a class="btn" href="#products">تصفّح الخدمات</a>
-    <button class="btn ghost" onclick="openQuiz()">اعرف باقتك المناسبة ✨</button>
+    <a class="btn" href="#products" data-t="hero.cta">تصفّح الخدمات</a>
+    <button class="btn ghost" onclick="openQuiz()" data-t="hero.quizCta">اعرف باقتك المناسبة ✨</button>
   </div>
 </header>
 <nav class="secnav" id="secnav"></nav>
@@ -39,15 +39,15 @@ fbq('track', 'PageView');
 <main>
   <section id="products">
     <div class="quizbar">
-      <div><b>محتار تختار أنهي باقة؟</b><span>جاوب على 3 أسئلة سريعة، ونقولك الباقة اللي تناسب نشاطك بالظبط</span></div>
-      <button class="btn" onclick="openQuiz()">اعرف باقتك في 30 ثانية</button>
+      <div><b data-t="quizbar.title">محتار تختار أنهي باقة؟</b><span data-t="quizbar.sub">جاوب على 3 أسئلة سريعة، ونقولك الباقة اللي تناسب نشاطك بالظبط</span></div>
+      <button class="btn" onclick="openQuiz()" data-t="quizbar.btn">اعرف باقتك في 30 ثانية</button>
     </div>
     <div id="grid"></div>
   </section>
   <section class="trust">
-    <a href="https://wa.me/971563720054?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%A8%D8%AF%D8%A3%20%D9%85%D8%B9%20MT%20UAE%20FANS" target="_blank" data-track="ابدأ دلوقتي"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L4.5 13.5H12l-1 8 8.5-11H12z"/></svg><b>تنفيذ سريع</b><small>نبدأ شغلك خلال 24 ساعة</small><em>ابدأ دلوقتي ←</em></a>
-    <a href="https://instagram.com/mtuae_fans" target="_blank"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg><b>نتائج حقيقية</b><small>نتابع الأرقام ونطوّر باستمرار</small><em>شوف شغلنا على إنستغرام ←</em></a>
-    <a href="https://wa.me/971563720054?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" data-track="دعم مباشر"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.1-4.2A8.5 8.5 0 1 1 20.5 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><b>دعم مباشر</b><small>تواصل معنا على واتساب في أي وقت</small><em>كلّمنا دلوقتي ←</em></a>
+    <a href="https://wa.me/971563720054?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%B9%D8%A7%D9%8A%D8%B2%20%D8%A3%D8%A8%D8%AF%D8%A3%20%D9%85%D8%B9%20MT%20UAE%20FANS" target="_blank" data-track="ابدأ دلوقتي"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L4.5 13.5H12l-1 8 8.5-11H12z"/></svg><b data-t="trust.0.title">تنفيذ سريع</b><small data-t="trust.0.sub">نبدأ شغلك خلال 24 ساعة</small><em data-t="trust.0.link">ابدأ دلوقتي ←</em></a>
+    <a href="https://instagram.com/mtuae_fans" target="_blank"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg><b data-t="trust.1.title">نتائج حقيقية</b><small data-t="trust.1.sub">نتابع الأرقام ونطوّر باستمرار</small><em data-t="trust.1.link">شوف شغلنا على إنستغرام ←</em></a>
+    <a href="https://wa.me/971563720054?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1" target="_blank" data-track="دعم مباشر"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.1-4.2A8.5 8.5 0 1 1 20.5 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><b data-t="trust.2.title">دعم مباشر</b><small data-t="trust.2.sub">تواصل معنا على واتساب في أي وقت</small><em data-t="trust.2.link">كلّمنا دلوقتي ←</em></a>
   </section>
 </main>
 

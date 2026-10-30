@@ -207,3 +207,8 @@ a.cta{display:block;text-decoration:none;text-align:center}
 .qbox .feat{list-style:none;padding:0;text-align:right;font-size:15px;margin-top:6px}
 .qbox .feat li{position:relative;padding:6px 26px 6px 0;border-bottom:1px solid var(--line)}
 .qbox .feat li::before{content:'✓';position:absolute;right:2px;top:6px;color:var(--gold);font-weight:900}
+/* نافذة الأسئلة على الشاشات القصيرة: الاختيارات 2×2 وشريط تمرير غامق */
+.mbox{scrollbar-width:thin;scrollbar-color:var(--gold) transparent}
+.mbox::-webkit-scrollbar{width:6px}.mbox::-webkit-scrollbar-track{background:transparent}.mbox::-webkit-scrollbar-thumb{background:var(--gline);border-radius:6px}
+@media (min-width:601px){.qbox .qopts{grid-template-columns:1fr 1fr}.qbox .qopt{padding:16px 12px}}
+@media (max-height:760px){.qbox h2{font-size:21px;margin-bottom:12px}.qbox{padding-top:38px}.qopt{padding:10px}.qopt .ico{width:22px;height:22px}}
