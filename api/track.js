@@ -1,7 +1,7 @@
 // بيسجّل حركة الزوار في المتجر (زيارة، فتح تفاصيل، طلب واتساب، الأسئلة) للوحة التحكم
 const L = require('./_lib');
 
-const EVENTS = ['visit', 'details', 'order', 'ask', 'contact', 'quiz_start', 'quiz_done', 'quiz_order'];
+const EVENTS = ['visit', 'details', 'order', 'ask', 'contact', 'quiz_start', 'quiz_done', 'quiz_order', 'links_view', 'link'];
 const LEADS = ['order', 'quiz_order', 'ask', 'contact'];   // دول بيظهروا في "آخر الطلبات"
 
 module.exports = async (req, res) => {

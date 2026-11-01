@@ -336,4 +336,5 @@ $('checkout').onclick = async () => {
     $('msg').textContent = 'الدفع الأونلاين غير مفعّل بعد، تقدر تطلب عبر واتساب 👇';
   }
 };
-init();
+// رابط ?quiz=1 (من صفحة الروابط) بيفتح "اعرف باقتك" على طول
+init().then(() => { try { if (new URLSearchParams(location.search).has('quiz')) openQuiz(); } catch (e) {} });

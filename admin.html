@@ -227,6 +227,7 @@ const fmt = n => Number(n).toLocaleString('en-US');
 const CATS = { ads: 'التسويق الممول', social: 'إدارة السوشيال ميديا', media: 'الفيديو والتصميم', web: 'تصميم المواقع' };
 const HOT = ['الأكثر طلبًا', 'الأشمل'];
 const TAGS = ['الأكثر طلبًا', 'الأشمل', 'الأوفر', 'جديد', 'للتجربة', 'قريبًا'];
+const LINKLABEL = { store: 'تصفح الخدمات', quiz: 'اعرف باقتك', wa: 'واتساب', offers: 'صفحة العروض', tiktok: 'تيك توك', fb: 'فيسبوك' };
 const EVLABEL = { order: ['💬', 'طلب على واتساب'], quiz_order: ['✨', 'طلب من "اعرف باقتك"'], ask: ['❓', 'سؤال عن باقة'], contact: ['📞', 'تواصل'] };
 
 let KEY = '', S = null, saved = null, dirty = { products: false, site: false }, editIdx = -1, statDays = 7;
@@ -445,7 +446,8 @@ async function loadStats() {
           return `<div class="lead"><div class="ic">${ic}</div><div class="lt"><b>${esc(r.id ? pname(r.id) : (r.src || lb))}</b><span>${lb}${r.biz ? ' · ' + esc(r.biz) : ''}</span></div>
           <time>${new Date(r.t).toLocaleString('ar-EG', { timeZone: 'Asia/Dubai', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</time></div>`; }).join('') : '<div class="empty">لسه مفيش طلبات</div>'}
       </div>
-    </div>`;
+    </div>
+    <div class="panel"><div class="ph"><h2>صفحة الروابط (بايو إنستغرام)</h2><p>${fmt(T.links_view || 0)} زيارة للصفحة · ${fmt(T.link || 0)} ضغطة على الأزرار</p></div>${bars(per('link:'), k => LINKLABEL[k] || k)}</div>`;
 }
 </script>
 </body>
