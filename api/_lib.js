@@ -83,6 +83,10 @@ function validateProducts(list) {
     out.type = p.type === 'digital' ? 'digital' : 'service';
     if (out.type === 'service') out.cat = CATS.includes(p.cat) ? p.cat : 'ads';
     if (Array.isArray(p.features)) { const f = p.features.map(x => clean(x, 160)).filter(Boolean).slice(0, 30); if (f.length) out.features = f; }
+    const vid = clean(p.video, 200);
+    if (/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(vid)) out.video = vid;
+    const trial = parseInt(p.trial, 10);
+    if (trial > 0 && trial <= 90) out.trial = trial;
     if (p.hidden) out.hidden = true;
     return out;
   });

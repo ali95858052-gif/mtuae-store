@@ -196,17 +196,22 @@ details.grp .gb{padding:0 14px 14px}
       <label class="f"><span>الأيقونة</span><input class="inp" name="emoji" maxlength="8" placeholder="🔥"></label>
       <label class="f"><span>القسم</span><select class="inp" name="cat">
         <option value="ads">التسويق الممول</option><option value="social">إدارة السوشيال ميديا</option>
-        <option value="media">الفيديو والتصميم</option><option value="web">تصميم المواقع</option></select></label>
+        <option value="media">الفيديو والتصميم</option><option value="web">تصميم المواقع</option>
+        <option value="systems">أنظمة الإدارة</option></select></label>
     </div>
     <label class="f"><span>اسم الخدمة</span><input class="inp" name="name" required maxlength="80"></label>
     <label class="f"><span>وصف قصير</span><input class="inp" name="desc" maxlength="300"></label>
     <div class="row2">
-      <label class="f"><span>السعر (درهم)</span><input class="inp" name="price" type="number" inputmode="decimal" min="0" step="any" required></label>
+      <label class="f"><span>السعر (درهم)</span><input class="inp" name="price" type="number" inputmode="decimal" min="0" step="any" required><small>اكتب 0 لو السعر لسه ما اتحددش</small></label>
       <label class="f"><span>بعد السعر</span><input class="inp" name="per" maxlength="30" placeholder="شهريًا / للفيديو"></label>
     </div>
     <label class="f"><span>الشارة فوق البطاقة</span><input class="inp" name="tag" maxlength="30" placeholder="مثلًا: الأكثر طلبًا">
       <div class="chipsel" id="tagpick"></div>
       <small>"الأكثر طلبًا" و"الأشمل" بيخلّوا البطاقة بإطار أحمر منوّر. و"قريبًا" بتقفل زرار الطلب.</small></label>
+    <div class="row2">
+      <label class="f"><span>تجربة مجانية (أيام)</span><input class="inp" name="trial" type="number" inputmode="numeric" min="0" max="90" placeholder="مثلًا 14"><small>لو كتبت رقم، الزرار بيبقى "ابدأ تجربتك المجانية"</small></label>
+      <label class="f"><span>فيديو عرض (يوتيوب)</span><input class="inp" name="video" dir="ltr" maxlength="200" placeholder="https://youtu.be/..."><small>بيظهر جوه تفاصيل الباقة</small></label>
+    </div>
     <label class="f"><span>المميزات (كل ميزة في سطر)</span><textarea class="inp" name="features" rows="6"></textarea></label>
     <div class="tog">ظاهرة في المتجر<label class="sw"><input type="checkbox" name="visible"><i></i></label></div>
     <div class="sfoot"><button class="btn" type="submit">تم</button><button class="btn ghost" type="button" onclick="closeEd()">إلغاء</button></div>
@@ -286,7 +291,7 @@ function renderSvc() {
       h += `<div class="svc${p.hidden ? ' off' : ''}">
         <div class="em">${esc(p.emoji || '✨')}</div>
         <div class="info"><div class="nm">${esc(p.name)}</div>
-          <div class="mt"><span class="pr">${fmt(p.price)} درهم${p.per ? ' / ' + esc(p.per) : ''}</span>
+          <div class="mt"><span class="pr">${p.price ? fmt(p.price) + ' درهم' + (p.per ? ' / ' + esc(p.per) : '') : 'السعر قريبًا'}${p.trial ? ' · تجربة ' + p.trial + ' يوم' : ''}</span>
           ${p.tag ? `<span class="pill${HOT.includes(p.tag) ? ' hot' : ''}">${esc(p.tag)}</span>` : ''}
           ${p.hidden ? '<span class="pill off">مخفية</span>' : ''}</div></div>
         <div class="acts">
@@ -316,7 +321,7 @@ function openEd(i, cat) {
   editIdx = i; const f = $('edf'), p = i >= 0 ? S.products[i] : { emoji: '✨', name: '', desc: '', price: '', cat, type: 'service' };
   $('edt').textContent = i >= 0 ? 'تعديل الخدمة' : 'خدمة جديدة';
   f.emoji.value = p.emoji || ''; f.cat.value = p.cat || 'ads'; f.name.value = p.name || ''; f.desc.value = p.desc || '';
-  f.price.value = p.price; f.per.value = p.per || ''; f.tag.value = p.tag || ''; f.features.value = (p.features || []).join('\n'); f.visible.checked = !p.hidden;
+  f.price.value = p.price; f.per.value = p.per || ''; f.tag.value = p.tag || ''; f.features.value = (p.features || []).join('\n'); f.visible.checked = !p.hidden; f.trial.value = p.trial || ''; f.video.value = p.video || '';
   $('tagpick').innerHTML = ['بدون', ...TAGS].map(t => `<button type="button" class="${(t === 'بدون' ? '' : t) === (p.tag || '') ? 'on' : ''}">${t}</button>`).join('');
   $('tagpick').querySelectorAll('button').forEach(b => b.onclick = () => { f.tag.value = b.textContent === 'بدون' ? '' : b.textContent; $('tagpick').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
   $('ed').classList.add('on'); setTimeout(() => f.name.focus(), 60);
@@ -330,6 +335,8 @@ function saveEd(e) {
   if (f.per.value.trim()) p.per = f.per.value.trim();
   if (f.tag.value.trim()) p.tag = f.tag.value.trim();
   const feats = f.features.value.split('\n').map(x => x.trim()).filter(Boolean); if (feats.length) p.features = feats;
+  if (parseInt(f.trial.value, 10) > 0) p.trial = parseInt(f.trial.value, 10);
+  if (f.video.value.trim()) p.video = f.video.value.trim();
   if (!f.visible.checked) p.hidden = true;
   if (!p.name || !Number.isFinite(p.price)) return toast('اكتب الاسم والسعر', true);
   if (editIdx >= 0) S.products[editIdx] = p;

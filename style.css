@@ -212,3 +212,8 @@ a.cta{display:block;text-decoration:none;text-align:center}
 .mbox::-webkit-scrollbar{width:6px}.mbox::-webkit-scrollbar-track{background:transparent}.mbox::-webkit-scrollbar-thumb{background:var(--gline);border-radius:6px}
 @media (min-width:601px){.qbox .qopts{grid-template-columns:1fr 1fr}.qbox .qopt{padding:16px 12px}}
 @media (max-height:760px){.qbox h2{font-size:21px;margin-bottom:12px}.qbox{padding-top:38px}.qopt{padding:10px}.qopt .ico{width:22px;height:22px}}
+/* السعر لسه ما اتحددش + فيديو العرض التوضيحي */
+.price.tbd b{font-size:26px;color:var(--gold2)}
+.price.tbd span{flex-basis:100%;text-align:center;color:var(--muted);font-size:14px}
+.vid{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--gline);background:#000;margin-bottom:6px}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}

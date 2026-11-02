@@ -58,7 +58,17 @@ function stat(ev, extra) {
   } catch (e) {}
 }
 const waLink = text => `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
-const orderMsg = p => `مرحبا، أريد طلب ${p.name} (${Number(p.price).toLocaleString('en-US')} درهم${p.per ? ' / ' + p.per : ''})`;
+const orderMsg = p => p.price ? `مرحبا، أريد طلب ${p.name} (${Number(p.price).toLocaleString('en-US')} درهم${p.per ? ' / ' + p.per : ''})` : `مرحبا، أريد أعرف سعر ${p.name}`;
+const trialMsg = p => `مرحبا، أريد أبدأ التجربة المجانية لـ ${p.name} (${p.trial} يوم)`;
+// السعر: لو 0 يبقى لسه ما اتحددش
+const priceBox = p => p.price ? `<div class="price"><b>${Number(p.price).toLocaleString('en-US')}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>`
+  : `<div class="price tbd"><b>السعر قريبًا</b>${p.trial ? `<span>ابدأ بتجربة مجانية ${p.trial} يوم</span>` : ''}</div>`;
+// زرار الطلب: تجربة مجانية لو موجودة، وإلا طلب عادي
+const ctaBtn = (p, long) => isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
+  : p.trial ? `<button class="cta" onclick="startTrial('${p.id}')">ابدأ تجربتك المجانية ${p.trial} يوم 🎁</button>`
+  : `<button class="cta" onclick="orderService('${p.id}')">${p.price ? (long ? 'اطلب ' + p.name + ' عبر واتساب' : 'اطلب عبر واتساب') : 'اسأل عن السعر'} 💬</button>`;
+// فيديو يوتيوب جوه التفاصيل
+const ytId = u => { const m = String(u || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ''; };
 
 // نصوص المتجر من site.json: أي عنصر عليه data-t="hero.title1" بياخد النص بتاعه
 function applyTexts(site) {
@@ -84,16 +94,15 @@ async function init() {
     if (!feats && desc.includes(' · ')) { const parts = desc.split(' · '); desc = parts.shift(); feats = parts; }
     const list = feats ? `<ul class="feat">${feats.map((f, i) => `<li${feats.length > FOLD && i >= SHOW ? ' class="more"' : ''}>${f}</li>`).join('')}</ul>
       ${feats.length > FOLD ? `<button class="morebtn" onclick="toggleMore(this)">+ عرض كل المميزات (${feats.length})</button>` : ''}` : '';
-    const btn = isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
-      : p.type === 'service' ? `<button class="cta" onclick="orderService('${p.id}')">اطلب عبر واتساب 💬</button>`
-      : `<button class="cta" onclick="add('${p.id}')">أضف للسلة 🛒</button>`;
+    const btn = p.type === 'service' ? ctaBtn(p)
+      : isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>` : `<button class="cta" onclick="add('${p.id}')">أضف للسلة 🛒</button>`;
     return `<article class="card${HOT.includes(p.tag) ? ' hot' : ''}" id="card-${p.id}" data-id="${p.id}" tabindex="0" aria-label="${p.name}">
       ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
       <div class="em">${p.emoji}</div>
       <h3>${p.name}</h3>
       ${desc ? `<p class="desc">${desc}</p>` : ''}
       ${list}
-      <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
+      ${priceBox(p)}
       ${btn}
       <button class="details" onclick="openDetails('${p.id}')">تفاصيل الباقة وإزاي بنبدأ ←</button>
     </article>`;
@@ -203,16 +212,19 @@ function openDetails(id) {
     <div class="em">${p.emoji}</div>
     <h2 id="mtitle">${p.name}</h2>
     ${desc ? `<p class="mdesc">${desc}</p>` : ''}
+    ${ytId(p.video) ? `<h4>شاهد العرض التوضيحي</h4><div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${ytId(p.video)}?rel=0" title="${p.name}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>` : ''}
     ${feats ? `<h4>الباقة فيها إيه؟</h4><ul class="feat">${feats.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
     <h4>إزاي بنبدأ؟</h4>
-    <ol class="steps">
+    <ol class="steps">${p.trial ? `
+      <li><b>اطلب التجربة على واتساب</b><span>بتوصلنا رسالة جاهزة باسم النظام</span></li>
+      <li><b>نجهّزلك حسابك</b><span>ونشرحلك النظام خطوة بخطوة</span></li>
+      <li><b>جرّب ${p.trial} يوم مجانًا</b><span>وبعدها تختار الاشتراك اللي يناسبك</span></li>` : `
       <li><b>اطلب على واتساب</b><span>بتوصلنا رسالة جاهزة باسم الباقة</span></li>
       <li><b>نتفق على التفاصيل</b><span>نفهم نشاطك وهدفك ونأكد المطلوب</span></li>
-      <li><b>نبدأ الشغل</b><span>خلال 24 ساعة من التأكيد</span></li>
+      <li><b>نبدأ الشغل</b><span>خلال 24 ساعة من التأكيد</span></li>`}
     </ol>
-    <div class="price"><b>${fmt(p.price)}</b><span>درهم${p.per ? ' / ' + p.per : ''}</span></div>
-    ${isSoon(p) ? `<button class="cta" disabled>قريبًا ⏳</button>`
-      : `<button class="cta" onclick="orderService('${p.id}')">اطلب ${p.name} عبر واتساب 💬</button>`}
+    ${priceBox(p)}
+    ${ctaBtn(p, true)}
     <a class="ask" href="${waLink('مرحبا، عندي سؤال عن ' + p.name)}" target="_blank">عندك سؤال قبل ما تطلب؟ اسألنا</a>`;
   $('mbody').querySelector('.ask').addEventListener('click', () => { track('Contact', { content_name: 'سؤال: ' + p.name }); stat('ask', { id: p.id }); });
   stat('details', { id: p.id });
@@ -294,7 +306,7 @@ function quizResult() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuiz(); });
 
-function closeDetails() { $('modal').classList.remove('on'); document.body.classList.remove('lock'); }
+function closeDetails() { const v = $('mbody').querySelector('.vid'); if (v) v.remove(); $('modal').classList.remove('on'); document.body.classList.remove('lock'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetails(); });
 
 // خدمة (زي تصميم المواقع): تفتح واتساب برسالة جاهزة بدل السلة
@@ -304,6 +316,14 @@ function orderService(id) {
   track('Contact', { content_name: p.name });
   stat('order', { id: p.id });
   window.open(waLink(orderMsg(p)), '_blank');
+}
+
+function startTrial(id) {
+  const p = products.find(x => x.id === id); if (!p) return;
+  track('Lead', { content_name: 'تجربة: ' + p.name });
+  track('StartTrial', { content_name: p.name, value: 0, currency: 'AED' });
+  stat('order', { id: p.id });
+  window.open(waLink(trialMsg(p)), '_blank');
 }
 
 function add(id) { const p = products.find(x => x.id === id); if (!p || isSoon(p) || p.type === 'service') return; cart[id] = (cart[id] || 0) + 1; save(); render(); openCart(); }
