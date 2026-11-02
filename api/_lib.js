@@ -59,7 +59,7 @@ async function writeFile(path, text, sha, message) {
 }
 
 // ===== التحقق من البيانات قبل الحفظ =====
-const CATS = ['ads', 'social', 'media', 'web'];
+const CATS = ['ads', 'social', 'media', 'web', 'systems'];
 const clean = (v, max = 400) => {
   if (typeof v !== 'string') return '';
   const s = v.replace(/[<>]/g, '').trim();   // ممنوع أي كود HTML جوه النصوص
